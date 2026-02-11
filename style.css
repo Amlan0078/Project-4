@@ -160,7 +160,7 @@ h1 {
   box-sizing: border-box;
   
   /* GRID LAYOUT — gives perfect control over every line */
-  display: grid;
+  /* display: grid; */
   grid-template-columns: 1fr;
   gap: 0.5rem;
   justify-items: center;
