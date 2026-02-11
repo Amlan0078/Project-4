@@ -144,12 +144,12 @@ h1 {
   font-family: 'Georgia', serif;
 }
 
-/* --- HIDDEN MESSAGE — perfectly contained, symmetrical borders, never overflows --- */
+/* ---------- FIXED: SECRET MESSAGE — PERFECTLY CONSISTENT ON ALL DEVICES ---------- */
 .secret-message {
   margin-top: 1.6rem;
-  background: rgb(255, 239, 242);
+  background: rgba(255, 245, 245, 0.9);
   backdrop-filter: blur(6px);
-  padding: 1.4rem 1.2rem;
+  padding: 1.4rem 0.8rem;
   border-radius: 28px !important;
   border: 2px dashed #e7a1b0;
   display: none;
@@ -158,52 +158,122 @@ h1 {
   width: 100%;
   max-width: 100%;
   box-sizing: border-box;
-  word-wrap: break-word;
-  overflow-wrap: break-word;
+  
+  /* GRID LAYOUT — gives perfect control over every line */
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.5rem;
+  justify-items: center;
+  align-items: center;
+  text-align: center;
+}
 
-  /* background image */
+/* "i knew u wil say yes" — only element allowed to wrap */
+.secret-message div:first-child {
+  font-size: clamp(1.3rem, 5vw, 1.9rem);
+  white-space: normal;
+  word-break: break-word;
+  max-width: 100%;
+  padding: 0 0.3rem;
+  margin-bottom: 0.2rem;
+  line-height: 1.3;
+}
 
-  /* background-image: url(heart-bg.jpg);
-  background-size: cover;
-  background-position: center;
-  background-blend-mode: overlay; */
+/* "meet you today" badge */
+.secret-message div:nth-child(2) {
+  font-size: clamp(1rem, 4vw, 1.2rem);
+  white-space: nowrap !important;
+  background: rgba(255, 240, 240, 0.7);
+  padding: 0.4rem 0.8rem;
+  border-radius: 40px !important;
+  display: inline-block;
+  backdrop-filter: blur(2px);
+  width: fit-content;
+  max-width: 100%;
+}
+
+/* HOTEL NAME — ALWAYS ONE LINE */
+.hotel-name {
+  font-size: clamp(1.2rem, 5vw, 1.6rem);
+  font-weight: 600;
+  color: #b44559;
+  margin: 0.2rem 0;
+  text-shadow: 0.5px 0.5px white;
+  letter-spacing: 1.2px;
+  white-space: nowrap !important;
+  overflow-x: auto;
+  overflow-y: hidden;
+  max-width: 100%;
+  padding: 0 0.3rem;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none; /* Hide scrollbar in Firefox */
+}
+
+.hotel-name::-webkit-scrollbar {
+  display: none; /* Hide scrollbar in Chrome/Safari */
+}
+
+/* TIME — ALWAYS ONE LINE */
+.time {
+  font-size: clamp(1.1rem, 4.5vw, 1.5rem);
+  background: #ffeaee;
+  display: inline-block;
+  padding: 0.3rem 1.2rem;
+  border-radius: 40px !important;
+  font-weight: 600;
+  margin: 0.2rem 0;
+  border: 1px solid white;
+  color: #712e3a;
+  white-space: nowrap !important;
+  overflow-x: auto;
+  overflow-y: hidden;
+  max-width: 100%;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+.time::-webkit-scrollbar {
+  display: none;
+}
+
+/* HEART EMOJIS — ALWAYS ONE LINE */
+.floating-heart-emoji {
+  font-size: clamp(1.6rem, 6vw, 2.2rem);
+  line-height: 1;
+  margin: 0.2rem 0;
+  letter-spacing: 8px;
+  white-space: nowrap !important;
+  overflow-x: auto;
+  overflow-y: hidden;
+  max-width: 100%;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+.floating-heart-emoji::-webkit-scrollbar {
+  display: none;
+}
+
+/* "ever yours, with love" — ALWAYS ONE LINE */
+.secret-message div:last-child {
+  font-size: clamp(1rem, 4vw, 1.2rem);
+  color: #a3434f;
+  margin-top: 0.3rem;
+  white-space: nowrap !important;
+  overflow-x: auto;
+  overflow-y: hidden;
+  max-width: 100%;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+.secret-message div:last-child::-webkit-scrollbar {
+  display: none;
 }
 
 @keyframes appear {
   0% { opacity: 0; transform: scale(0.85); }
   100% { opacity: 1; transform: scale(1); }
-}
-
-.hotel-name {
-  font-size: 1.6rem;
-  font-weight: 600;
-  color: #b44559;
-  margin: 0.5rem 0 0.1rem;
-  text-shadow: 0.5px 0.5px white;
-  letter-spacing: 1.2px;
-  word-break: break-word;
-}
-
-.time {
-  font-size: 1.5rem;
-  background: #ffeaee;
-  display: inline-block;
-  padding: 0.3rem 1.5rem;
-  border-radius: 40px !important;
-  font-weight: 600;
-  margin-top: 0.4rem;
-  border: 1px solid white;
-  color: #712e3a;
-  max-width: 100%;
-  word-break: break-word;
-}
-
-.floating-heart-emoji {
-  font-size: 2.2rem;
-  line-height: 1;
-  margin-top: 0.5rem;
-  letter-spacing: 8px;
-  word-break: break-word;
 }
 
 .tiny-hearts {
@@ -214,35 +284,95 @@ h1 {
   letter-spacing: 3px;
 }
 
-/* for very small devices — everything stays inside */
+/* ---------- RESPONSIVE FIXES — CONSISTENT LAYOUT ON ALL SCREENS ---------- */
 @media (max-width: 500px) {
   .valentine-card { 
     padding: 1.3rem 1rem; 
     max-width: 98%; 
     border-radius: 24px !important;
   }
-  h1 { font-size: 1.6rem; }
-  .question { font-size: 1.4rem; padding: 0.2rem 1rem; }
+  
+  h1 { 
+    font-size: 1.6rem; 
+  }
+  
+  .question { 
+    font-size: 1.4rem; 
+    padding: 0.2rem 1rem; 
+  }
+  
   .btn-yes, .btn-no { 
     font-size: 1.3rem; 
     padding: 0.6rem 1.3rem; 
     border-radius: 30px !important;
   }
-  .button-panel { gap: 1.2rem; }
   
-  .secret-message {
-    padding: 1rem 0.9rem;
-    border-radius: 20px !important;
+  .button-panel { 
+    gap: 1.2rem; 
   }
-  .hotel-name { font-size: 1.3rem; }
-  .time { font-size: 1.2rem; padding: 0.2rem 1rem; }
+  
+  /* Secret message scales down but KEEP SAME LAYOUT */
+  .secret-message {
+    padding: 1rem 0.5rem;
+    border-radius: 20px !important;
+    gap: 0.3rem;
+  }
+  
+  /* All nowrap elements get slightly smaller font */
+  .hotel-name {
+    font-size: 1.2rem;
+    letter-spacing: 0.8px;
+  }
+  
+  .time {
+    font-size: 1.1rem;
+    padding: 0.2rem 0.8rem;
+  }
+  
+  .floating-heart-emoji {
+    font-size: 1.6rem;
+    letter-spacing: 5px;
+  }
+}
+
+/* TINY SCREENS — horizontal scroll appears if needed */
+@media (max-width: 380px) {
+  .hotel-name {
+    font-size: 1rem;
+  }
+  
+  .time {
+    font-size: 0.95rem;
+    padding: 0.2rem 0.6rem;
+  }
+  
+  .floating-heart-emoji {
+    font-size: 1.4rem;
+    letter-spacing: 4px;
+  }
+  
+  .secret-message div:last-child {
+    font-size: 0.95rem;
+  }
+  
+  /* Only wrap the main question on absolute smallest screens */
+  .secret-message div:first-child {
+    font-size: 1.2rem;
+  }
 }
 
 /* for extra tall narrow devices, card stays compact */
 @media (max-height: 700px) {
-  .valentine-card { padding: 1.2rem 1rem; }
-  h1 { font-size: 1.8rem; margin-bottom: 0.1rem; }
-  .question { margin: 0.3rem 0; }
+  .valentine-card { 
+    padding: 1.2rem 1rem; 
+  }
+  h1 { 
+    font-size: 1.8rem; 
+    margin-bottom: 0.1rem; 
+  }
+  .question { 
+    margin: 0.3rem 0; 
+  }
 }
 
 /* ensure ALL border-radius are consistent — universal fix */
@@ -257,4 +387,5 @@ button, .valentine-card, .question, .secret-message, .time, .btn-yes, .btn-no {
 
 .secret-message {
   border-radius: 28px !important;
+  border-style: dashed !important;
 }
