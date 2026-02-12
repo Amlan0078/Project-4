@@ -1,7 +1,7 @@
 (function() {
   "use strict";
 
-  // ---------- DOM elements ----------
+  // ---------- DOM ELEMENTS ----------
   const noBtn = document.getElementById('noBtn');
   const yesBtn = document.getElementById('yesBtn');
   const loveMsg = document.getElementById('loveMessage');
@@ -21,7 +21,6 @@
     };
   }
 
-  // collision detection — precise, no mercy
   function collidesWithYes(noLeft, noTop, noW, noH, yesZone) {
     const noRight = noLeft + noW;
     const noBottom = noTop + noH;
@@ -31,22 +30,19 @@
              noTop >= yesZone.bottom);
   }
 
-  // ---------- HYPER JUMP — instant, faster than ever, never near YES ----------
+  // ---------- SUPER HYPER MEGA JUMP — INSTANT, NO DELAY, NO THROTTLE ----------
   function hyperJumpNoButton() {
     if (!noBtn || !panel || !yesBtn) return;
 
     const noW = noBtn.offsetWidth;
     const noH = noBtn.offsetHeight;
 
-    // panel boundaries — keep button fully inside, with a whisper of margin
     const panelW = panel.offsetWidth;
     const panelH = panel.offsetHeight;
     const maxLeft = Math.max(0, panelW - noW - 2);
     const maxTop = Math.max(0, panelH - noH - 2);
 
-    // if panel is too tiny, still avoid yes at all costs
     if (maxLeft <= 0 || maxTop <= 0) {
-      // force far corner but still no overlap
       noBtn.style.left = '0px';
       noBtn.style.top = '0px';
       return;
@@ -55,7 +51,7 @@
     const yesZone = getYesZone();
 
     let attempts = 0;
-    const MAX_ATTEMPTS = 180;
+    const MAX_ATTEMPTS = 300; // More attempts = better avoidance
     let newLeft, newTop;
     let found = false;
 
@@ -63,7 +59,6 @@
       newLeft = Math.random() * maxLeft;
       newTop = Math.random() * maxTop;
 
-      // gentle clamping
       newLeft = Math.min(Math.max(newLeft, 0), maxLeft);
       newTop = Math.min(Math.max(newTop, 0), maxTop);
 
@@ -75,7 +70,6 @@
     }
 
     if (!found) {
-      // ultimate escape: farthest corner from YES button center
       const yesCenterX = (yesZone.left + yesZone.right) / 2;
       const yesCenterY = (yesZone.top + yesZone.bottom) / 2;
       const corners = [
@@ -93,37 +87,41 @@
           newTop = ly;
         }
       }
-      // final check — shift if still overlapping (rare)
+      
       if (collidesWithYes(newLeft, newTop, noW, noH, yesZone)) {
-        if (newLeft < panelW/2) newLeft = Math.min(maxLeft, newLeft + noW + 6);
-        else newLeft = Math.max(0, newLeft - noW - 6);
-        if (newTop < panelH/2) newTop = Math.min(maxTop, newTop + noH + 6);
-        else newTop = Math.max(0, newTop - noH - 6);
+        if (newLeft < panelW/2) newLeft = Math.min(maxLeft, newLeft + noW + 8);
+        else newLeft = Math.max(0, newLeft - noW - 8);
+        if (newTop < panelH/2) newTop = Math.min(maxTop, newTop + noH + 8);
+        else newTop = Math.max(0, newTop - noH - 8);
         newLeft = Math.min(Math.max(newLeft, 0), maxLeft);
         newTop = Math.min(Math.max(newTop, 0), maxTop);
       }
     }
 
-    // instant reposition — no transition, no delay
+    // 🚀 INSTANT MOVE — NO TRANSITION, NO DELAY
     noBtn.style.left = newLeft + 'px';
     noBtn.style.top = newTop + 'px';
   }
 
-  // ---------- TRIGGERS — run, run, run away ----------
+  // ---------- REMOVE ALL THROTTLING — SUPER FAST TRIGGERS ----------
+  
+  // 1️⃣ MOUSEENTER — instant flee
   noBtn.addEventListener('mouseenter', (e) => {
     e.preventDefault();
     hyperJumpNoButton();
   });
 
+  // 2️⃣ CLICK — instant flee + 3 extra jumps (impossible to catch)
   noBtn.addEventListener('click', (e) => {
     e.preventDefault();
     e.stopPropagation();
     hyperJumpNoButton();
-    hyperJumpNoButton();  // double escape
-    hyperJumpNoButton();  // triple fast
+    hyperJumpNoButton();
+    hyperJumpNoButton();
+    hyperJumpNoButton(); // 4 total jumps — ZERO delay
   });
 
-  // panel mousemove — if mouse approaches NO button, it flees
+  // 3️⃣ MOUSEMOVE on PANEL — if mouse comes within 250px, INSTANT FLEE
   panel.addEventListener('mousemove', (e) => {
     if (!noBtn) return;
     const noRect = noBtn.getBoundingClientRect();
@@ -132,51 +130,76 @@
     const btnCenterX = noRect.left + noRect.width/2;
     const btnCenterY = noRect.top + noRect.height/2;
     const dist = Math.hypot(mouseX - btnCenterX, mouseY - btnCenterY);
-    if (dist < 200) {
+    
+    // 🚨 ANYTHING within 250px = GTFO
+    if (dist < 250) {
       hyperJumpNoButton();
     }
   });
 
-  // touch devices
-  noBtn.addEventListener('touchstart', (e) => {
-    e.preventDefault();
-    hyperJumpNoButton();
-  });
-  noBtn.addEventListener('touchmove', (e) => {
-    e.preventDefault();
-    hyperJumpNoButton();
-  });
-
-  // global mousemove — keep NO away from cursor curiosity
+  // 4️⃣ GLOBAL MOUSEMOVE — NO THROTTLE, FLEE FROM CURSOR ANYWHERE
   document.addEventListener('mousemove', (e) => {
     if (!noBtn) return;
-    // throttle a bit to keep it smooth but still lightning
-    if (window._lastJumpTime && Date.now() - window._lastJumpTime < 16) return;
+    
     const noRect = noBtn.getBoundingClientRect();
     const mouseX = e.clientX;
     const mouseY = e.clientY;
     const centerX = noRect.left + noRect.width/2;
     const centerY = noRect.top + noRect.height/2;
-    if (Math.hypot(mouseX - centerX, mouseY - centerY) < 190) {
-      window._lastJumpTime = Date.now();
+    const dist = Math.hypot(mouseX - centerX, mouseY - centerY);
+    
+    // 🚨 SUPER SENSITIVE — 300px DANGER ZONE
+    if (dist < 300) {
       hyperJumpNoButton();
     }
   });
 
-  // resize handler — keep inside panel and avoid YES
+  // 5️⃣ TOUCH DEVICES — instant response
+  noBtn.addEventListener('touchstart', (e) => {
+    e.preventDefault();
+    hyperJumpNoButton();
+    hyperJumpNoButton();
+  });
+  
+  noBtn.addEventListener('touchmove', (e) => {
+    e.preventDefault();
+    hyperJumpNoButton();
+    hyperJumpNoButton();
+  });
+
+  // 6️⃣ TOUCH on PANEL — flee immediately
+  panel.addEventListener('touchstart', (e) => {
+    hyperJumpNoButton();
+  });
+
+  panel.addEventListener('touchmove', (e) => {
+    hyperJumpNoButton();
+  });
+
+  // 7️⃣ WINDOW RESIZE — reposition safely
   window.addEventListener('resize', () => {
     hyperJumpNoButton();
   });
 
-  // initial positioning: set absolute and find safe spot
+  // 8️⃣ ORIENTATION CHANGE (mobile) — immediate reposition
+  window.addEventListener('orientationchange', () => {
+    setTimeout(() => { hyperJumpNoButton(); }, 10);
+  });
+
+  // 9️⃣ SCROLL (just in case) — FLEE
+  window.addEventListener('scroll', () => {
+    hyperJumpNoButton();
+  });
+
+  // ---------- INITIAL POSITIONING ----------
   window.addEventListener('load', () => {
     noBtn.style.position = 'absolute';
     hyperJumpNoButton();
-    setTimeout(() => { hyperJumpNoButton(); }, 20);
-    setTimeout(() => { hyperJumpNoButton(); }, 60);
+    hyperJumpNoButton();
+    hyperJumpNoButton();
   });
 
-  // perpetual safety monitor — never ever covers YES
+  // ---------- PERPETUAL SAFETY MONITOR — NEVER COVERS YES ----------
   function safetyGuard() {
     if (noBtn && yesBtn && panel) {
       const left = parseFloat(noBtn.style.left) || 0;
@@ -192,15 +215,13 @@
   }
   requestAnimationFrame(safetyGuard);
 
-  // ---------- YES BUTTON — reveals the sweet message, perfectly contained ----------
+  // ---------- YES BUTTON — reveals the sweet message ----------
   yesBtn.addEventListener('click', () => {
-    // Display message - it will stay inside card due to overflow hidden and max-width
-    loveMsg.style.display = 'block';
+    loveMsg.style.display = 'grid';  // MUST be 'grid'
     yesBtn.disabled = true;
     yesBtn.style.opacity = '0.8';
     yesBtn.style.cursor = 'default';
     
-    // celebrate: push NO button to far corner, but still no overlap
     if (panel && noBtn) {
       const panelW = panel.offsetWidth;
       const panelH = panel.offsetHeight;
@@ -210,21 +231,20 @@
       const maxT = Math.max(0, panelH - noH - 2);
       noBtn.style.left = maxL + 'px';
       noBtn.style.top = maxT + 'px';
-      // double-check collision
+      
       const yesZone = getYesZone();
       if (collidesWithYes(maxL, maxT, noW, noH, yesZone)) {
         hyperJumpNoButton();
       }
     }
     
-    // Ensure message is visible and within bounds
     loveMsg.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   });
 
-  // initial absolute
+  // Initialize position
   noBtn.style.position = 'absolute';
   
-  // Force all border-radius to be symmetrical with !important
+  // Force border-radius symmetry
   const style = document.createElement('style');
   style.innerHTML = `
     .valentine-card, .secret-message, .btn-yes, .btn-no, .question, .time {
