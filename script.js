@@ -30,7 +30,7 @@
              noTop >= yesZone.bottom);
   }
 
-  // ---------- SUPER HYPER MEGA JUMP — INSTANT, NO DELAY, NO THROTTLE ----------
+  // ---------- HYPER JUMP — INSTANT, NO DELAY ----------
   function hyperJumpNoButton() {
     if (!noBtn || !panel || !yesBtn) return;
 
@@ -51,7 +51,7 @@
     const yesZone = getYesZone();
 
     let attempts = 0;
-    const MAX_ATTEMPTS = 300; // More attempts = better avoidance
+    const MAX_ATTEMPTS = 300;
     let newLeft, newTop;
     let found = false;
 
@@ -98,30 +98,125 @@
       }
     }
 
-    // 🚀 INSTANT MOVE — NO TRANSITION, NO DELAY
     noBtn.style.left = newLeft + 'px';
     noBtn.style.top = newTop + 'px';
   }
 
-  // ---------- REMOVE ALL THROTTLING — SUPER FAST TRIGGERS ----------
-  
-  // 1️⃣ MOUSEENTER — instant flee
+  // ---------- MOBILE-OPTIMIZED: CONTINUOUS FLEE MODE ----------
+  let fleeInterval = null;
+  let isTouching = false;
+
+  function startMobileFlee() {
+    if (fleeInterval) clearInterval(fleeInterval);
+    // 🚀 SUPER FAST FLEE — 60 FPS (every 16ms)
+    fleeInterval = setInterval(() => {
+      if (isTouching) {
+        hyperJumpNoButton();
+        hyperJumpNoButton(); // Double jump for extra speed
+      }
+    }, 16); // 60 times per second = smooth & fast
+  }
+
+  function stopMobileFlee() {
+    if (fleeInterval) {
+      clearInterval(fleeInterval);
+      fleeInterval = null;
+    }
+  }
+
+  // ---------- TOUCH EVENTS — AGGRESSIVE FLEE ----------
+  noBtn.addEventListener('touchstart', (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    isTouching = true;
+    
+    // 🔥 INSTANT TRIPLE JUMP on first touch
+    hyperJumpNoButton();
+    hyperJumpNoButton();
+    hyperJumpNoButton();
+    
+    // 🚀 Start continuous flee mode
+    startMobileFlee();
+  });
+
+  noBtn.addEventListener('touchmove', (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    isTouching = true;
+    
+    // 🔥 Jump on every touch move
+    hyperJumpNoButton();
+  });
+
+  noBtn.addEventListener('touchend', (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    isTouching = false;
+    stopMobileFlee();
+    
+    // One final jump for safety
+    hyperJumpNoButton();
+  });
+
+  noBtn.addEventListener('touchcancel', (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    isTouching = false;
+    stopMobileFlee();
+  });
+
+  // ---------- PANEL TOUCH — FLEE EVEN IF FINGER NEAR BUTTON ----------
+  panel.addEventListener('touchstart', (e) => {
+    // Check if touch is near NO button
+    if (!noBtn) return;
+    
+    const touch = e.touches[0];
+    const noRect = noBtn.getBoundingClientRect();
+    const touchX = touch.clientX;
+    const touchY = touch.clientY;
+    const btnCenterX = noRect.left + noRect.width/2;
+    const btnCenterY = noRect.top + noRect.height/2;
+    const dist = Math.hypot(touchX - btnCenterX, touchY - btnCenterY);
+    
+    // 🚨 If finger comes within 300px on mobile — FLEE!
+    if (dist < 300) {
+      hyperJumpNoButton();
+      hyperJumpNoButton();
+    }
+  });
+
+  panel.addEventListener('touchmove', (e) => {
+    if (!noBtn || !isTouching) return;
+    
+    const touch = e.touches[0];
+    const noRect = noBtn.getBoundingClientRect();
+    const touchX = touch.clientX;
+    const touchY = touch.clientY;
+    const btnCenterX = noRect.left + noRect.width/2;
+    const btnCenterY = noRect.top + noRect.height/2;
+    const dist = Math.hypot(touchX - btnCenterX, touchY - btnCenterY);
+    
+    // 🚨 SUPER SENSITIVE ON MOBILE
+    if (dist < 350) {
+      hyperJumpNoButton();
+    }
+  });
+
+  // ---------- DESKTOP EVENTS (keep these for mouse users) ----------
   noBtn.addEventListener('mouseenter', (e) => {
     e.preventDefault();
     hyperJumpNoButton();
   });
 
-  // 2️⃣ CLICK — instant flee + 3 extra jumps (impossible to catch)
   noBtn.addEventListener('click', (e) => {
     e.preventDefault();
     e.stopPropagation();
     hyperJumpNoButton();
     hyperJumpNoButton();
     hyperJumpNoButton();
-    hyperJumpNoButton(); // 4 total jumps — ZERO delay
+    hyperJumpNoButton();
   });
 
-  // 3️⃣ MOUSEMOVE on PANEL — if mouse comes within 250px, INSTANT FLEE
   panel.addEventListener('mousemove', (e) => {
     if (!noBtn) return;
     const noRect = noBtn.getBoundingClientRect();
@@ -131,13 +226,11 @@
     const btnCenterY = noRect.top + noRect.height/2;
     const dist = Math.hypot(mouseX - btnCenterX, mouseY - btnCenterY);
     
-    // 🚨 ANYTHING within 250px = GTFO
     if (dist < 250) {
       hyperJumpNoButton();
     }
   });
 
-  // 4️⃣ GLOBAL MOUSEMOVE — NO THROTTLE, FLEE FROM CURSOR ANYWHERE
   document.addEventListener('mousemove', (e) => {
     if (!noBtn) return;
     
@@ -148,45 +241,23 @@
     const centerY = noRect.top + noRect.height/2;
     const dist = Math.hypot(mouseX - centerX, mouseY - centerY);
     
-    // 🚨 SUPER SENSITIVE — 300px DANGER ZONE
     if (dist < 300) {
       hyperJumpNoButton();
     }
   });
 
-  // 5️⃣ TOUCH DEVICES — instant response
-  noBtn.addEventListener('touchstart', (e) => {
-    e.preventDefault();
-    hyperJumpNoButton();
-    hyperJumpNoButton();
-  });
-  
-  noBtn.addEventListener('touchmove', (e) => {
-    e.preventDefault();
-    hyperJumpNoButton();
-    hyperJumpNoButton();
-  });
-
-  // 6️⃣ TOUCH on PANEL — flee immediately
-  panel.addEventListener('touchstart', (e) => {
-    hyperJumpNoButton();
-  });
-
-  panel.addEventListener('touchmove', (e) => {
-    hyperJumpNoButton();
-  });
-
-  // 7️⃣ WINDOW RESIZE — reposition safely
+  // ---------- WINDOW EVENTS ----------
   window.addEventListener('resize', () => {
     hyperJumpNoButton();
   });
 
-  // 8️⃣ ORIENTATION CHANGE (mobile) — immediate reposition
   window.addEventListener('orientationchange', () => {
-    setTimeout(() => { hyperJumpNoButton(); }, 10);
+    setTimeout(() => { 
+      hyperJumpNoButton();
+      hyperJumpNoButton();
+    }, 50);
   });
 
-  // 9️⃣ SCROLL (just in case) — FLEE
   window.addEventListener('scroll', () => {
     hyperJumpNoButton();
   });
@@ -199,7 +270,7 @@
     hyperJumpNoButton();
   });
 
-  // ---------- PERPETUAL SAFETY MONITOR — NEVER COVERS YES ----------
+  // ---------- PERPETUAL SAFETY MONITOR ----------
   function safetyGuard() {
     if (noBtn && yesBtn && panel) {
       const left = parseFloat(noBtn.style.left) || 0;
@@ -215,9 +286,9 @@
   }
   requestAnimationFrame(safetyGuard);
 
-  // ---------- YES BUTTON — reveals the sweet message ----------
+  // ---------- YES BUTTON ----------
   yesBtn.addEventListener('click', () => {
-    loveMsg.style.display = 'grid';  // MUST be 'grid'
+    loveMsg.style.display = 'grid';
     yesBtn.disabled = true;
     yesBtn.style.opacity = '0.8';
     yesBtn.style.cursor = 'default';
@@ -239,9 +310,13 @@
     }
     
     loveMsg.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    
+    // Stop mobile flee when YES is clicked
+    stopMobileFlee();
+    isTouching = false;
   });
 
-  // Initialize position
+  // Initialize
   noBtn.style.position = 'absolute';
   
   // Force border-radius symmetry
